@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "async-claude-client"
+version = "0.1.0"
+description = "async client for claude.ai and slack.com"
+authors = ["canxin <1969730106@qq.com>"]
+readme = "README.md"
+homepage = "https://github.com/canxin121/Async-Claude-Client"
+packages = [{include = "async_claude_client"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+curl-cffi = "^0.5.7"
+loguru = "^0.7.1"
+pydantic = "^1.10.12"
+slack-sdk = "^3.21.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
