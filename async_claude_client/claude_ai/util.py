@@ -4,15 +4,28 @@ import asyncio
 import json
 import threading
 import urllib.parse
+from functools import wraps
 from pathlib import Path
 from typing import Union
 
 
-def run_in_new_thread(func, *args):
-    loop = asyncio.new_event_loop()
-    t = threading.Thread(target=loop.run_until_complete, args=(func(*args),))
+def run_in_loop(loop, func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if asyncio.iscoroutinefunction(func):
+            return loop.run_until_complete(func(*args, **kwargs))
+        else:
+            return loop.run_in_executor(None, func, *args, **kwargs)
+
+    return wrapper
+
+
+def run_in_new_thread(func, *args, wait: bool = False):
+    t = threading.Thread(target=func(*args))
     t.daemon = True
     t.start()
+    if wait:
+        t.join()
 
 
 def parse_proxy_url(url: str):
@@ -86,12 +99,10 @@ def get_content_type(file_path):
         return "application/octet-stream"
 
 
-async def build_request(
-    client, question: str, conversation_id: str, attachment: str | Path
-):
+def build_request(client, question: str, conversation_id: str, attachment: str | Path):
     attachments = []
     if attachment:
-        attachment_response = await client.upload_attachment(attachment)
+        attachment_response = client.upload_attachment(attachment)
         if attachment_response:
             attachments = [attachment_response]
         else:
