@@ -77,7 +77,7 @@ class Slack_Claude_Client:
                 and user == self.claude_id
             ):
                 return Text(
-                    content=text.rstrip("_Typing…_"),
+                    content=text.rstrip("\n\n_Typing…_"),
                     finished=bool(not text.endswith("_Typing…_")),
                 )
         await asyncio.sleep(2)
