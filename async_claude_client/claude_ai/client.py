@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import uuid
 from pathlib import Path
 
 from curl_cffi import requests
@@ -70,7 +71,7 @@ class ClaudeAiClient:
         )
         return resp.json()
 
-    @retry(3, "Failed to get chat all chats")
+    @retry(3, "Failed to get all chats")
     @run_sync
     def get_all_chats(self):
         """获取所有的对话窗口"""
@@ -87,23 +88,30 @@ class ClaudeAiClient:
             return conversations
         else:
             raise Exception(resp.text())
-
-    @retry(3, "Failed to get create new chat")
+        
+    def generate_uuid(self):
+        random_uuid = uuid.uuid4()
+        random_uuid_str = str(random_uuid)
+        formatted_uuid = f"{random_uuid_str[0:8]}-{random_uuid_str[9:13]}-{random_uuid_str[14:18]}-{random_uuid_str[19:23]}-{random_uuid_str[24:]}"
+        return formatted_uuid
+    
+    @retry(3, "Failed to create new chat")
     @run_sync
     def create_new_chat(self):
         """创建新的对话窗口"""
-
-        resp = requests.get(
+        uuid = self.generate_uuid()
+        resp = requests.post(
             f"https://claude.ai/api/organizations/{self.organization_id}/chat_conversations",
             headers=self.process_header(CNC_Headers),
+            data=json.dumps({"uuid": uuid, "name": ""}),
             proxies=self.proxy_dict,
             impersonate="chrome110",
         )
-        if resp.status_code == 200:
-            data = resp.json()
-            return data[0]
+
+        if resp.status_code == 201:
+            return resp.json()
         else:
-            raise Exception(f"code: {resp.status}, error: {resp.text()}")
+            raise Exception(f"code: {resp.status_code}, error: {resp.text()}")
 
     @retry(3, "Failed to delete chat")
     @run_sync

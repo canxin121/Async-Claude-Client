@@ -35,6 +35,7 @@ CCH_Headers = {**base_headers, "Content-Type": "application/json"}
 
 CNC_Headers = {
     **base_headers,
+    'Content-Type': 'application/json',
     "Origin": "https://claude.ai",
     "DNT": "1",
     "TE": "trailers",
