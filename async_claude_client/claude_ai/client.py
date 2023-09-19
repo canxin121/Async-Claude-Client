@@ -88,22 +88,16 @@ class ClaudeAiClient:
             return conversations
         else:
             raise Exception(resp.text())
-        
-    def generate_uuid(self):
-        random_uuid = uuid.uuid4()
-        random_uuid_str = str(random_uuid)
-        formatted_uuid = f"{random_uuid_str[0:8]}-{random_uuid_str[9:13]}-{random_uuid_str[14:18]}-{random_uuid_str[19:23]}-{random_uuid_str[24:]}"
-        return formatted_uuid
     
     @retry(3, "Failed to create new chat")
     @run_sync
     def create_new_chat(self):
         """创建新的对话窗口"""
-        uuid = self.generate_uuid()
+        random_uuid = str(uuid.uuid4())
         resp = requests.post(
             f"https://claude.ai/api/organizations/{self.organization_id}/chat_conversations",
             headers=self.process_header(CNC_Headers),
-            data=json.dumps({"uuid": uuid, "name": ""}),
+            data=json.dumps({"uuid": random_uuid, "name": ""}),
             proxies=self.proxy_dict,
             impersonate="chrome110",
         )
