@@ -88,7 +88,7 @@ class ClaudeAiClient:
             return conversations
         else:
             raise Exception(resp.text())
-    
+
     @retry(3, "Failed to create new chat")
     @run_sync
     def create_new_chat(self):
