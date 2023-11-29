@@ -114,7 +114,7 @@ def build_request(client, question: str, conversation_id: str, attachment: str |
         "completion": {
             "prompt": f"{question}",
             "timezone": "Asia/Kolkata",
-            "model": "claude-2",
+            "model": "claude-2.1",
         },
         "organization_uuid": f"{client.organization_id}",
         "conversation_uuid": f"{conversation_id}",
